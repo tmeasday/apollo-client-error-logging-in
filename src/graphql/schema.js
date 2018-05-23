@@ -1,10 +1,6 @@
-import {
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLID,
-  GraphQLString,
-  GraphQLList,
-} from 'graphql';
+import { GraphQLSchema, GraphQLObjectType, GraphQLID, GraphQLString, GraphQLList } from 'graphql';
+
+import getLoggedIn from '../loggedIn';
 
 const PersonType = new GraphQLObjectType({
   name: 'Person',
@@ -25,7 +21,12 @@ const QueryType = new GraphQLObjectType({
   fields: {
     people: {
       type: new GraphQLList(PersonType),
-      resolve: () => peopleData,
+      resolve: () => {
+        if (getLoggedIn()) {
+          return peopleData;
+        }
+        throw new Error('not logged in');
+      },
     },
   },
 });
